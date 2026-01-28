@@ -1,7 +1,9 @@
 package com.belog.controller;
 
 import com.belog.request.PostCreate;
+import com.belog.service.PostService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -14,20 +16,14 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PostController {
 
-    @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params, BindingResult result) throws Exception {
-        if (result.hasErrors()) {
-            List<FieldError> fieldErrors = result.getFieldErrors();
-            FieldError firstFieldError = fieldErrors.get(0);
-            String fieldName = firstFieldError.getField();
-            String errorMessage = firstFieldError.getDefaultMessage();
+    private final PostService postService;
 
-            Map<String, String> error = new HashMap<>();
-            error.put(fieldName, errorMessage);
-            return error;
-        }
+    @PostMapping("/posts")
+    public Map<String, String> post(@RequestBody @Valid PostCreate request) throws Exception {
+        postService.write(request);
         return Map.of();
     }
 }
