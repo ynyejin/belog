@@ -1,5 +1,6 @@
 package com.belog.controller;
 
+import com.belog.domain.Post;
 import com.belog.request.PostCreate;
 import com.belog.service.PostService;
 import jakarta.validation.Valid;
@@ -24,5 +25,11 @@ public class PostController {
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request) throws Exception {
         postService.write(request);
+    }
+
+    @GetMapping("/posts/{postId}")
+    public Post get(@PathVariable(name = "postId") Long id) {
+        Post post = postService.get(id);
+        return post;
     }
 }
