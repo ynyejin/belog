@@ -2,6 +2,7 @@ package com.belog.controller;
 
 import com.belog.domain.Post;
 import com.belog.request.PostCreate;
+import com.belog.response.PostResponse;
 import com.belog.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,17 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/posts")
-    public void post(@RequestBody @Valid PostCreate request) throws Exception {
+    public void post(@RequestBody @Valid PostCreate request) {
         postService.write(request);
     }
 
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(name = "postId") Long id) {
-        Post post = postService.get(id);
-        return post;
+    public PostResponse get(@PathVariable Long postId) {
+        return postService.get(postId);
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList() {
+        return postService.getList();
     }
 }
