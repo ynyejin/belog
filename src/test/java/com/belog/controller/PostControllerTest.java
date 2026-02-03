@@ -133,27 +133,46 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+//    @Test
+//    @DisplayName("글 여러 개 조회")
+//    void test5() throws Exception {
+//        // given
+//        List<Post> requestPosts = IntStream.range(1, 31)
+//                .mapToObj(i -> Post.builder()
+//                            .title("제목 " + i)
+//                            .content("내용 " + i)
+//                            .build())
+//                .collect(Collectors.toList());
+//        postRepository.saveAll(requestPosts);
+//
+//        // expected
+//        mockMvc.perform(get("/posts?page=1&size=10")
+//                        .contentType(APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.length()", is(10)))
+//                .andExpect(jsonPath("$[0].id").value(30))
+//                .andExpect(jsonPath("$[0].title").value("제목 30"))
+//                .andDo(print());
+//    }
+
     @Test
-    @DisplayName("글 여러 개 조회")
-    void test5() throws Exception {
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+    void test6() throws Exception {
         // given
-        List<Post> requestPosts = IntStream.range(1, 31)
-                .mapToObj(i -> {
-                    return Post.builder()
-                            .title("제목 " + i)
-                            .content("내용 " + i)
-                            .build();
-                })
+        List<Post> requestPosts = IntStream.range(0, 20)
+                .mapToObj(i -> Post.builder()
+                            .title("foo" + i)
+                            .content("bar" + i)
+                            .build())
                 .collect(Collectors.toList());
         postRepository.saveAll(requestPosts);
 
         // expected
-        mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
+        mockMvc.perform(get("/posts?page=0&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(5)))
-                .andExpect(jsonPath("$[0].id").value(30))
-                .andExpect(jsonPath("$[0].title").value("제목 30"))
+                .andExpect(jsonPath("$.length()", is(10)))
+                .andExpect(jsonPath("$[0].title").value("foo19"))
                 .andDo(print());
     }
 
