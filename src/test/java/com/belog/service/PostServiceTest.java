@@ -3,6 +3,7 @@ package com.belog.service;
 import com.belog.domain.Post;
 import com.belog.repository.PostRepository;
 import com.belog.request.PostCreate;
+import com.belog.request.PostEdit;
 import com.belog.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,4 +97,57 @@ class PostServiceTest {
 //        assertEquals("제목 1", posts.get(0).getTitle());
 //        assertEquals("제목 5", posts.get(4).getTitle());
 //    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void test4() {
+        // given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목수정")
+                .content("내용")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        Assertions.assertEquals("제목수정",  changedPost.getTitle());
+        Assertions.assertEquals("내용",  changedPost.getContent());
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    void test5() {
+        // given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목")
+                .content("내용수정")
+                .build();
+
+        // when
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+        Assertions.assertEquals("제목",  changedPost.getTitle());
+        Assertions.assertEquals("내용수정",  changedPost.getContent());
+    }
+
+
 }

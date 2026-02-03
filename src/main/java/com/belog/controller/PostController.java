@@ -2,6 +2,7 @@ package com.belog.controller;
 
 import com.belog.domain.Post;
 import com.belog.request.PostCreate;
+import com.belog.request.PostEdit;
 import com.belog.request.PostSearch;
 import com.belog.response.PostResponse;
 import com.belog.service.PostService;
@@ -39,5 +40,10 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+
+    @PatchMapping("/posts/{postId}")
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        postService.edit(postId, request);
     }
 }
