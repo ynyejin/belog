@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id "org.asciidoctor.jvm.convert" version "4.0.5"
 }
 
 group = 'com.example'
@@ -14,18 +15,27 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
 
 ext {
     querydslVersion = "5.0.0"
+    restdocsVersion = "4.0.0"
+    asciidoctorjVersion = "3.0.0"
+    snippetsDir = file('build/generated-snippets')
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    asciidoctorExt {
+        resolutionStrategy.force(
+                "org.asciidoctor:asciidoctorj:${asciidoctorjVersion}",
+                "org.asciidoctor:asciidoctorj-api:${asciidoctorjVersion}"
+        )
+    }
 }
 
 dependencies {
@@ -34,6 +44,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    asciidoctorExt "org.springframework.restdocs:spring-restdocs-asciidoctor:${restdocsVersion}"
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc:${restdocsVersion}"
 
     implementation "com.querydsl:querydsl-core:${querydslVersion}"
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
@@ -53,4 +66,23 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    copy {
+        from asciidoctor.outputDir
+        into "src/main/resources/static/docs"
+    }
+}
+
+asciidoctorj {
+    version = "${asciidoctorjVersion}"
 }
